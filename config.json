@@ -1,0 +1,8 @@
+{
+ "auth": false,
+ "authorization": "login:password in Base64",
+ "bucket_name": "Loader",
+ "host": "???",
+ "http_ver": 11,
+ "port": "1234"
+}

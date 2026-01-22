@@ -1,0 +1,57 @@
+name: Build C++ App
+
+# Когда запускать: при каждом push в репозиторий
+on: [push]
+
+# Определяем задачу сборки
+jobs:
+  build:
+    # Используем последний Ubuntu (Linux)
+    runs-on: ubuntu-latest
+    
+    # Шаги, которые выполнятся:
+    steps:
+    # 1. Скачиваем твой код из репозитория
+    - name: Download source code
+      uses: actions/checkout@v4
+    
+    # 2. Устанавливаем всё необходимое
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++          # Компилятор
+        sudo apt-get install -y libboost-all-dev     # Boost библиотеки
+        sudo apt-get install -y nlohmann-json3-dev   # JSON библиотека
+    
+    # 3. Компилируем программу
+    - name: Compile program
+      run: |
+        # Компилируем все .cpp файлы
+        g++ -std=c++17 *.cpp -o Loader \
+            -lboost_system \
+            -lboost_filesystem
+    
+    # 4. ПРОВЕРКА: Запускаем программу
+    - name: Test executable
+      run: |
+        # Проверяем, что файл создан
+        if [ -f "./Loader" ]; then
+          echo "✅ Файл Loader создан"
+          # Показываем информацию о файле
+          file ./Loader
+          ls -la ./Loader
+          
+          # Пробуем запустить
+          echo "=== Пробный запуск программы ==="
+          timeout 5s ./Loader || echo "⚠ Программа завершилась с кодом $?"
+        else
+          echo "❌ Ошибка: файл Loader не найден"
+          exit 1
+        fi
+    
+    # 5. Сохраняем результат
+    - name: Save executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: Loader         # Как назовём файл для скачивания
+        path: Loader         # Что сохраняем (наша скомпилированная программа)
