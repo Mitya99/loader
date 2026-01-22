@@ -49,9 +49,23 @@ jobs:
           exit 1
         fi
     
-    # 5. Сохраняем результат
-    - name: Save executable
+    # 5. Готовим папку со всем необходимым
+    - name: Prepare package
+      run: |
+        # Создаём папку для сборки
+        mkdir -p release_package
+    
+        # Копируем всё что нужно
+        cp Loader release_package/
+        cp Voina_i_mir.txt release_package/
+        cp config.json release_package/
+    
+        # Проверяем что скопировалось
+        ls -la release_package/
+
+    # 6. Сохраняем результат
+    - name: Save package
       uses: actions/upload-artifact@v4
       with:
-        name: Loader         # Как назовём файл для скачивания
-        path: Loader         # Что сохраняем (наша скомпилированная программа)
+        name: Loader-release
+        path: release_package/
